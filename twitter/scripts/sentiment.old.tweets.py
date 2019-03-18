@@ -6,25 +6,6 @@ import pandas as pd
 
 
 
-# Old Tweets
-
-tweetCriteria = got.manager.TweetCriteria().setQuerySearch('grupo mexico')\
-                                           .setSince("2015-05-01")\
-                                           .setUntil("2015-05-02")\
-                                           .setTopTweets(True)\
-                                           .setMaxTweets(10)
-tweet = got.manager.TweetManager.getTweets(tweetCriteria)[0]
-
-print(tweet.text)
-analysis = TextBlob(tweet.text)
-print(analysis.sentiment)
-if analysis.sentiment[0]>0:
-	print('Positive')
-else:
-	print('Negative')
-print("")
-
-
 # LOOP 
 years = 2
 daily_tweets = 1000
@@ -50,7 +31,7 @@ for year in range(years):
             yyyy = str(year_a)
             mm = str(month).zfill(2)
             dd = str(day+1).zfill(2)
-            print(yyyy+'-'+mm+'-'+dd)
+            #print(yyyy+'-'+mm+'-'+dd)
             dateymd= str(yyyy+'-'+mm+'-'+dd)
             dates.append(dateymd)
 
