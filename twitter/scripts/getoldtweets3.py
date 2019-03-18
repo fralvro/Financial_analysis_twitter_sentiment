@@ -3,7 +3,7 @@ import GetOldTweets3 as got
 
 
 # Get tweets by username(s):
-tweetCriteria = got.manager.TweetCriteria().setUsername("barackobama whitehouse")\
+tweetCriteria = got.manager.TweetCriteria().setUsername("economista")\
                                            .setMaxTweets(8)
 tweet = got.manager.TweetManager.getTweets(tweetCriteria)[0]
 print(tweet.text)
@@ -13,7 +13,7 @@ print(tweet.text)
 
 #Get tweets by query search:
 
-tweetCriteria = got.manager.TweetCriteria().setQuerySearch('IPC')\
+tweetCriteria = got.manager.TweetCriteria().setQuerySearch('el economista')\
                                            .setSince("2015-05-01")\
                                            .setUntil("2015-09-30")\
                                            .setMaxTweets(10)
