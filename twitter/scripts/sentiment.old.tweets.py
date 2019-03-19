@@ -8,7 +8,7 @@ import pandas as pd
 
 # LOOP 
 years = 2
-daily_tweets = 1000
+daily_tweets = 10
 
 dates=[]
 for year in range(years):
