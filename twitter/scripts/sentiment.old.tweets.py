@@ -8,7 +8,7 @@ import pandas as pd
 
 # LOOP 
 years = 2
-daily_tweets = 10
+daily_tweets = 25
 
 dates=[]
 for year in range(years):
@@ -38,17 +38,17 @@ for year in range(years):
             
 # RETRIEVE AND OBTAIN SENTIMENT
   
-keywords = ['ipc', 'mexico', 'bmv', 'bolsa mexicana de valores', 'mexbol', 'bolsa mexicana', 'el economista',
-            'el financiero', 'mexico stock', 'indice de precios y cotizaciones', 'banco de mexico', 'gobierno de mexico',
-            'america movil', 'walmex','femsa','televisa', 'grupo mexico','banorte','cemex','grupo alfa', 
+keywords = ['america movil','banco de mexico', 'mexico', 'bmv', 'bolsa mexicana de valores', 'mexbol', 'bolsa mexicana', 'el economista',
+            'el financiero', 'mexico stock', 'ipc', 'gobierno de mexico',
+             'walmex','femsa','televisa', 'grupo mexico','banorte','cemex','grupo alfa', 
             'peñoles', 'inbursa', 'elektra', 'mexichem', 'bimbo', 'arca continental', 'kimberly-clark',
             'genomma lab', 'puerto de liverpool', 'grupo aeroportuario', 'banco compartamos', 'alpek', 'ica',
             'tv azteca', 'ohl', 'maseca', 'alsea', 'carso', 'lala', 'banregio', 'comercial mexicana',
-            'ienova', 'pinfra', 'santander mexico', 'presidente de mexico', 'mexican government', 'president of mexico']          
+            'ienova', 'pinfra', 'santander mexico', 'presidente de mexico', 'mexican government', 'president of mexico','cetes']          
 
 #random.choice(keywords)  47
 #tweets = [] No necesito guardar los tweets, solo las calificaciones
-
+a=0
 df_list = []
 
 for i in range(len(dates)):
@@ -65,10 +65,15 @@ for i in range(len(dates)):
         
         pos_neg = []                                              
         for j in range(daily_tweets):
-            
-            if len(got.manager.TweetManager.getTweets(tweetCriteria))!=0:
+            lista_tweets = got.manager.TweetManager.getTweets(tweetCriteria)
+            if len(lista_tweets)<=j:
+                
+                s = 'na'
                                    
-                tweet = got.manager.TweetManager.getTweets(tweetCriteria)[j]
+                            
+            else:
+                
+                tweet = lista_tweets[j]
                 #print(tweet.text)
                 analysis = TextBlob(tweet.text)
                 #print(analysis.sentiment)
@@ -76,10 +81,12 @@ for i in range(len(dates)):
                     s=1 #positive
                 else:
                     s=0 #negative
-            
-            else:
-                s = 'na'
+                               
+                
             print(s)
+            a=a+1
+            print(a)
+            print(keyword)
             #tweets.append(tui) No necesito guardar los tweets, solo las calificaciones
             pos_neg.append(s)
            
