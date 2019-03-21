@@ -4,14 +4,16 @@ import GetOldTweets3 as got
 import pandas as pd
 from datetime import date, timedelta
 
+# NODE NUMBER
+node_number = 0 #from 0 to total_nodes-1
+total_nodes = 10
 
-
-# LOOP 
+# DATES 
 years = 1
 daily_tweets = 50
 
 
-d1 = date(2019-years, 3, 24)  # start date
+d1 = date(2019-years, 3, 19)  # start date
 d2 = date(2019, 3, 19)  # end date
 
 delta = d2 - d1         # timedelta
@@ -21,7 +23,13 @@ for i in range(delta.days + 1):
     j = str(d1 + timedelta(i))
     dates.append(j)
 
+# Split Dates
+    
+def split(a, n):
+    k, m = divmod(len(a), n)
+    return (a[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))  
 
+dates = list(split(dates,total_nodes))[node_number]  
            
 # RETRIEVE AND OBTAIN SENTIMENT
   
@@ -81,6 +89,15 @@ for i in range(len(dates)):
                 data1[keyword]=pos_neg
     
     data1.to_csv('Documents/tweets/'+str(dates[i])+'_'+str(daily_tweets)+'tweets.csv')       
+    #df_list.append(data1)
+                
+                
+              
+
+                
+#data_twitter= pd.concat(df_list, ignore_index=True)
+            
+            
                 
                 
 
