@@ -2,27 +2,40 @@
 from textblob import TextBlob
 import GetOldTweets3 as got
 import pandas as pd
-from datetime import date, timedelta
+
 
 
 
 # LOOP 
-years = 1
-daily_tweets = 50
-
-
-d1 = date(2019-years, 3, 24)  # start date
-d2 = date(2019, 3, 19)  # end date
-
-delta = d2 - d1         # timedelta
+years = 2
+daily_tweets = 25
 
 dates=[]
-for i in range(delta.days + 1):
-    j = str(d1 + timedelta(i))
-    dates.append(j)
+for year in range(years):
+    year_a = 2019-year
+    months = 12 
+    for month in range(months):
+        month = month+1
 
+        if month == 6 or month == 4 or month == 9 or month == 11:
+            days = 30
+        if month == 1 or month == 3 or month == 5 or month == 7 or month == 8 or month == 10 or month == 12:
+            days = 31
+        else: 
+            if year_a == 2016 or year_a == 2004 or year_a == 2008 or year_a == 2012 or year_a == 2016:
+                days = 29
+            else:
+                days=28      
+    
+        for day in range(days):
+            yyyy = str(year_a)
+            mm = str(month).zfill(2)
+            dd = str(day+1).zfill(2)
+            #print(yyyy+'-'+mm+'-'+dd)
+            dateymd= str(yyyy+'-'+mm+'-'+dd)
+            dates.append(dateymd)
 
-           
+            
 # RETRIEVE AND OBTAIN SENTIMENT
   
 keywords = ['america movil','banco de mexico', 'mexico', 'bmv', 'bolsa mexicana de valores', 'mexbol', 'bolsa mexicana', 'el economista',
@@ -151,6 +164,15 @@ for i in range(len(dates)):
                 data1[keyword]=pos_neg
     
     data1.to_csv('Documents/tweets/'+str(dates[i])+'_'+str(daily_tweets)+'tweets.csv')       
+    #df_list.append(data1)
+                
+                
+              
+
+                
+#data_twitter= pd.concat(df_list, ignore_index=True)
+            
+            
                 
                 
 
