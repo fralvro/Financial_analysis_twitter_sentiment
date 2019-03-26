@@ -3,21 +3,28 @@ import GetOldTweets3 as got
 
 
 # Get tweets by username(s):
-tweetCriteria = got.manager.TweetCriteria().setUsername("economista")\
-                                           .setMaxTweets(8)
+tweetCriteria = got.manager.TweetCriteria().setUsername("ElFinanciero_Mx")\
+                                           .setMaxTweets(1)
 tweet = got.manager.TweetManager.getTweets(tweetCriteria)[0]
 print(tweet.text)
+
+
+tweetCriteria = got.manager.TweetCriteria().setQuerySearch('mexico')\
+                                               .setUsername()\
+                                               .setSince("2015-05-01")\
+                                               .setUntil("2015-05-02")\
+                                               .setMaxTweets(1)
 
 
 
 
 #Get tweets by query search:
 
-tweetCriteria = got.manager.TweetCriteria().setQuerySearch('el economista')\
+tweetCriteria = got.manager.TweetCriteria().setQuerySearch('eleconomista')\
                                            .setSince("2015-05-01")\
                                            .setUntil("2015-09-30")\
-                                           .setMaxTweets(10)
-tweet = got.manager.TweetManager.getTweets(tweetCriteria)[2]
+                                           .setMaxTweets(1)
+tweet = got.manager.TweetManager.getTweets(tweetCriteria)[0]
 print(tweet.text)
 data = tweet
 

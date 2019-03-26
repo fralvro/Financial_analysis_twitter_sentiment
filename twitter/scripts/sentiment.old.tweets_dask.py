@@ -3,15 +3,25 @@ import GetOldTweets3 as got
 import pandas as pd
 from datetime import date, timedelta
 
+# DASK
+import dask as dask
+from dask.distributed import Client, progress
+import dask.dataframe as dd
+
+client = Client()
+client
+
+from dask import delayed
+                
 
 
 # LOOP 
 years = 1
-daily_tweets = 50
+daily_tweets = 2
 
 
 d1 = date(2019-years, 3, 24)  # start date
-d2 = date(2019, 3, 19)  # end date
+d2 = date(2018, 4, 24)  # end date
 
 delta = d2 - d1         # timedelta
 
@@ -24,7 +34,6 @@ for i in range(delta.days + 1):
            
 # RETRIEVE AND OBTAIN SENTIMENT
   
-sources = ['eleconomista', 'ElFinanciero_Mx']
     
 keywords = ['america movil','banco de mexico', 'mexico', 'bmv', 'bolsa mexicana de valores', 'bolsa mexicana',
             'ipc', 'gobierno de mexico',
@@ -34,15 +43,15 @@ keywords = ['america movil','banco de mexico', 'mexico', 'bmv', 'bolsa mexicana 
             'tv azteca', 'ohl', 'maseca', 'alsea', 'carso', 'lala', 'banregio', 'comercial mexicana',
             'ienova', 'pinfra', 'santander mexico', 'presidente de mexico','cetes']          
 
-#random.choice(keywords)  47
-#tweets = [] No necesito guardar los tweets, solo las calificaciones
-a=0
-df_list = []
 
-for i in range(len(dates)):
+
+
+@delayed
+def daily_tweets_func(i, dates, keywords, daily_tweets):       
     
     i=i+1
-    data1 = pd.DataFrame({'Date':[dates[i]]*daily_tweets})
+    
+    globals()['data%s'%1] = pd.DataFrame({'Date':[dates[i]]*daily_tweets})
     
     for keyword in keywords:
         
@@ -72,17 +81,49 @@ for i in range(len(dates)):
                                
                 
             print(s)
-            a=a+1
-            print(a)
             print(keyword)
-            #tweets.append(tui) No necesito guardar los tweets, solo las calificaciones
+
             pos_neg.append(s)
            
             if len(pos_neg)==daily_tweets:
-                data1[keyword]=pos_neg
+                globals()['data%s'%1][keyword]=pos_neg
     
-    data1.to_csv('Documents/tweets/'+str(dates[i])+'_'+str(daily_tweets)+'tweets.csv')       
-                
+    globals()['data%s'%1].to_csv('Documents/tweets/'+str(dates[i])+'_'+str(daily_tweets)+'tweets.csv')       
+    return globals()['data%s'%1]          
 
-                
 
+var_l=[]
+dataframes = []
+for i in range(len(dates)):
+    
+    if i+1 > len(dates):
+        break
+    else:
+        globals()['data%s'%str(i+1)] = daily_tweets_func(i,dates,keywords, daily_tweets)
+        
+        dataframes.append(globals()['data%s'%str(i+1)])
+        
+        nvar = 'data'+str(i+1)
+        var_l.append(nvar)
+
+var_l.pop()
+dataframes.pop()
+
+
+@delayed
+def create_variables(dataframes):
+    
+    variables = pd.concat(dataframes, axis=0)
+    return variables
+
+"""
+@delayed
+def create_variables(data1,data2,data3):
+    
+    variables = pd.concat([data1,data2,data3], axis=0)
+    return variables
+"""
+
+data_final = create_variables(dataframes)
+
+data_final = data_final.compute()
