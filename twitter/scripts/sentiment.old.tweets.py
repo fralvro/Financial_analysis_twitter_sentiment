@@ -10,7 +10,7 @@ years = 1
 daily_tweets = 50
 
 
-d1 = date(2019-years, 3, 19)  # start date
+d1 = date(2019-years, 3, 24)  # start date
 d2 = date(2019, 3, 19)  # end date
 
 delta = d2 - d1         # timedelta
@@ -83,4 +83,4 @@ for i in range(len(dates)):
                 
 
                 
-datos_pau = pd.read_csv('Documents/tweets/2018-03-20_50tweets.csv')
+
