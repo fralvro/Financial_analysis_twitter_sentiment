@@ -17,7 +17,7 @@ from dask import delayed
 
 # LOOP 
 years = 1
-daily_tweets = 2
+daily_tweets = 5
 
 
 d1 = date(2019-years, 3, 24)  # start date
