@@ -16,12 +16,12 @@ from dask import delayed
 
 
 # LOOP 
-years = 2
+years = 3
 daily_tweets = 3
 
 
 d1 = date(2019-years, 1, 1)  # start date
-d2 = date(2018, 1, 1)  # end date
+d2 = date(2017, 1, 1)  # end date
 
 delta = d2 - d1         # timedelta
 
@@ -90,7 +90,7 @@ def daily_tweets_func(i, dates, keywords,sources, daily_tweets):
                 if len(pos_neg)==daily_tweets:
                     globals()['data%s'%1][source+'_'+keyword]=pos_neg
     
-    globals()['data%s'%1].to_csv('tweets/1.5_years_26marzo/2019/'+str(dates[i])+'_'+str(daily_tweets)+'tweets.csv')     
+    globals()['data%s'%1].to_csv('tweets/1.5_years_26marzo/2016/'+str(dates[i])+'_'+str(daily_tweets)+'tweets.csv')     
     return globals()['data%s'%1]          
 
 
