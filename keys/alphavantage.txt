@@ -1,0 +1,4 @@
+Your_Key: 8RC8G9RS7DXBFN4M
+# Paste your Quandl API Key leaving a blank space after the ":"
+
+

@@ -212,13 +212,15 @@ explicativa interesante
 
 """
 # Extraigo Información de Yahoo
-data = Fetcher("^MXX", [2016,12,31], [2019,3,26]) #Reviso que las fechas estén 
-# en el rango de las fechas_real
 
-yahoo = data.getHistorical()
+import fix_yahoo_finance as yf  
+yahoo = yf.download("^MXX",'2017-01-01','2019-03-26') # Revisar que las fechas
+# coincidan con el rango de los tweets
 
-#yahoo_dat = yahoo.set_index('Date')
 
+from alpha_vantage.timeseries import TimeSeries
+ts = TimeSeries(key='8RC8G9RS7DXBFN4M', output_format='pandas')
+data, meta_data = ts.get_daily(symbol='MSFT', outputsize='full')
 
 # Transformo información relativa a datos del día 
 
@@ -227,7 +229,7 @@ v_cierre=[]
 r_ap_ci=[]
 vol_tr=[]
 ap_nxd=[]
-fechas=[] #lo hago así para asegurar que el orden de las fechas no vaya a cambiar 
+fecha=[]
 
 for i in range(len(yahoo)):
     
@@ -235,21 +237,20 @@ for i in range(len(yahoo)):
         break
     else:
 
-        list_var = [yahoo.iloc[i,1],yahoo.iloc[i,2],yahoo.iloc[i,3],
-                    yahoo.iloc[i,4]]
+        list_var = [yahoo.iloc[i,0],yahoo.iloc[i,1],yahoo.iloc[i,2],
+                    yahoo.iloc[i,3]]
         
         var_apertura = np.var(list_var)/list_var[0]
         var_cierre = np.var(list_var)/list_var[3]
         range_ap_ci = list_var[0]/list_var[3]
-        vol_trans = yahoo.iloc[i,6] # No entiendo el dato en el que el vol=0, puede
+        vol_trans = yahoo.iloc[i,5] # No entiendo el dato en el que el vol=0, puede
         # ser por un día que no abre el mercado. Existe eso? Le pongo la media de los datos?
         
         v_apertura.append(var_apertura)
         v_cierre.append(var_cierre)
         r_ap_ci.append(range_ap_ci)
         vol_tr.append(vol_trans)
-        fechas.append(yahoo.iloc[i,0])
-        
+        fecha.append(str(yahoo.index[i])[:10])
         
         """
                                ---- VARIABLE A PREDECIR ----
@@ -259,13 +260,13 @@ for i in range(len(yahoo)):
         
         """
         
-        ap_sig_d = (yahoo.iloc[(i+1),1]-yahoo.iloc[i,4])/yahoo.iloc[i,4]
+        ap_sig_d = (yahoo.iloc[(i+1),0]-yahoo.iloc[i,3])/yahoo.iloc[i,3]
         ap_nxd.append(ap_sig_d)
 
 
 datos_fin = pd.DataFrame({'var_rel_apertura':v_apertura, 'var_rel_cierre':v_cierre,
                           'rate_ap_cierre':r_ap_ci,'volume':vol_tr,
-                          'apertura_next_day':ap_nxd, 'Date':fechas})
+                          'apertura_next_day':ap_nxd, 'Dates':fecha})
     
     
     
@@ -278,10 +279,80 @@ Los junto y los guardo como csv
          
 """
 
-fin_index = datos_fin.set_index('Date')          
+# Reviso que en la info financiera estén todas las fechas que puse en los tweets.
+
+fechas_faltantes_fin = list(set(fechas_real)-set(datos_fin['Dates']))
+
+"""
+2 APROXIMACIONES PARA LA UNIÓN DE TWEETS CON INFO FINANCIERA
+
+--- PRIMERA APROXIMACIÓN
+    INCLUIR SENTIMIENTO DE FECHAS FALTANTES EN DÍA ANTERIOR ---
+    
+    La idea es incluir el sentimiento de los tweets de los días no laborables
+    dentro de la fecha anterior inmediata de la serie de tiempo. Ej: sentimiento
+    de sábado y domingo incluirlo en viernes para predecir lunes.
+    
+"""
+
+
+fin_index = datos_fin.set_index('Dates')          
 
 # 1 Por fuente 
 
-por_fuente 
+por_fuente_fin = por_fuente.join(fin_index)
+
+por_fuente_fin.index = pd.to_datetime(por_fuente_fin.index)
+
+por_fuente_fin = por_fuente_fin.sort_index()
+
+# 1.1  APROXIMACIÓN 1 POR FUENTE
+
+# para mañana: Convertir los new_columns en un dataFrame que se pueda join al
+# dataFrame una_fuente y eliminar los anteriores. No olvidar normalizarlo por renglón también
+        
+por_fuente_loop = por_fuente_fin
+new_columns=[]
+count=[]
+for i in range(len(datos_fin)): # Uso datos_fin porque en teoría deberían de quedar
+    #ambos conjuntos del mismo tamaño
+    
+    if np.isnan(por_fuente_loop.iloc[i,13])==True:
+        por_fuente_loop=por_fuente_loop.drop(por_fuente_loop.index[i])
+        
+    if i > len(datos_fin)-10:
+        k= len(datos_fin)-i
+                                         # Acá hago que la comparativa sea con
+                                         # Las 10 siguientes, pero si me aproximo
+                                         # al final, lo reduzco para no salir 
+                                         # del margen
+    if i <= len(datos_fin)-10:
+        k=10
+    
+    
+    if np.isnan(por_fuente_loop.iloc[i,13])==False:
+        
+        
+        for j in range(k): # este for evalúa si en las siguientes filas hay nan consecutivos 
+            
+            j = k-j # Voy del más repetido al menos repetido
+            
+            
+            
+            if all(np.isnan(por_fuente_loop.iloc[i+1:i+j,13])==True)==True:
+                
+                print(j)
+                
+                suma = (por_fuente_loop.iloc[i:i+j,0:9]).sum(axis=0) # Es desde i
+                #porque se le suman a la fila actual
+                
+                rows_to_drop = list(por_fuente_loop.index[i+1:i+j])
+                por_fuente_loop=por_fuente_loop.drop(rows_to_drop)
+                new_columns.append(suma)
+    
+                break
+
+
+
 
 # 2 
