@@ -293,6 +293,9 @@ fechas_faltantes_fin = list(set(fechas_real)-set(datos_fin['Dates']))
     dentro de la fecha anterior inmediata de la serie de tiempo. Ej: sentimiento
     de sábado y domingo incluirlo en viernes para predecir lunes.
     
+--- SEGUNDA APROXIMACIÓN 
+    NO INCLUIR SENTIMIENTO DE FECHAS FALTANTES EN DÍA ANTERIOR
+    
 """
 
 
@@ -308,12 +311,9 @@ por_fuente_fin = por_fuente_fin.sort_index()
 
 # 1.1  APROXIMACIÓN 1 POR FUENTE
 
-# para mañana: Convertir los new_columns en un dataFrame que se pueda join al
-# dataFrame una_fuente y eliminar los anteriores. No olvidar normalizarlo por renglón también
-        
+      
 por_fuente_loop = por_fuente_fin
 new_columns=[]
-count=[]
 for i in range(len(datos_fin)): # Uso datos_fin porque en teoría deberían de quedar
     #ambos conjuntos del mismo tamaño
     
@@ -341,18 +341,93 @@ for i in range(len(datos_fin)): # Uso datos_fin porque en teoría deberían de q
             
             if all(np.isnan(por_fuente_loop.iloc[i+1:i+j,13])==True)==True:
                 
-                print(j)
                 
                 suma = (por_fuente_loop.iloc[i:i+j,0:9]).sum(axis=0) # Es desde i
                 #porque se le suman a la fila actual
                 
                 rows_to_drop = list(por_fuente_loop.index[i+1:i+j])
                 por_fuente_loop=por_fuente_loop.drop(rows_to_drop)
+                # lo dejo en porcentaje
+                suma=suma/sum(suma)fuente
                 new_columns.append(suma)
     
                 break
 
 
+ap1_por_fuente = pd.concat(new_columns,axis=1).T # Formato final
+ap1_por_fuente['Dates'] = list(por_fuente_loop.index)
+ap1_por_fuente = ap1_por_fuente.set_index('Dates')
+ap1_por_fuente = ap1_por_fuente.join(por_fuente_loop.iloc[:,9:14])
+
+# 1.2 APROXIMACIÓN 2 POR FUENTE 
+
+ap2_por_fuente = por_fuente_loop
+
+# 2 por tema
+
+por_tema_fin = por_tema.join(fin_index)
+
+por_tema_fin.index = pd.to_datetime(por_tema_fin.index)
+
+por_tema_fin = por_tema_fin.sort_index()
+
+# 2.1 APROXIMACIÓN 1 POR TEMA
+
+      
+por_tema_loop = por_tema_fin
+new_columns=[]
+for i in range(len(datos_fin)): # Uso datos_fin porque en teoría deberían de quedar
+    #ambos conjuntos del mismo tamaño
+    
+    if np.isnan(por_tema_loop.iloc[i,127])==True:
+        por_tema_loop=por_tema_loop.drop(por_tema_loop.index[i])
+        
+    if i > len(datos_fin)-10:
+        k= len(datos_fin)-i
+                                         # Acá hago que la comparativa sea con
+                                         # Las 10 siguientes, pero si me aproximo
+                                         # al final, lo reduzco para no salir 
+                                         # del margen
+    if i <= len(datos_fin)-10:
+        k=10
+    
+    
+    if np.isnan(por_tema_loop.iloc[i,127])==False:
+        
+        
+        for j in range(k): # este for evalúa si en las siguientes filas hay nan consecutivos 
+            
+            j = k-j # Voy del más repetido al menos repetido
+            
+            
+            
+            if all(np.isnan(por_tema_loop.iloc[i+1:i+j,127])==True)==True:
+                
+                
+                suma = (por_tema_loop.iloc[i:i+j,0:123]).sum(axis=0) # Es desde i
+                #porque se le suman a la fila actual
+                
+                rows_to_drop = list(por_tema_loop.index[i+1:i+j])
+                por_tema_loop=por_tema_loop.drop(rows_to_drop)
+                # lo dejo en porcentaje
+                suma=suma/sum(suma)
+                new_columns.append(suma)
+    
+                break
 
 
-# 2 
+ap1_por_tema = pd.concat(new_columns,axis=1).T # Formato final
+ap1_por_tema['Dates'] = list(por_tema_loop.index)
+ap1_por_tema = ap1_por_tema.set_index('Dates')
+ap1_por_tema = ap1_por_tema.join(por_tema_loop.iloc[:,123:128])
+
+# 2.2 APROXIMACIÓN 2 POR TEMA 
+
+ap2_por_tema = por_tema_loop
+
+
+# 3 MIX FUENTE_TEMA
+
+# 3.1 PROXIMACIÓN 1 MIX FUENTE_TEMA
+ap1_mix_fuente_tema = ap1_por_tema.join(ap1_por_fuente.iloc[:,0:9])
+
