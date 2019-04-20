@@ -41,7 +41,7 @@ keywords = ['america movil','banco de mexico', 'mexico', 'bmv', 'bolsa mexicana 
 
 # - De entrada junto todos los .csv dentro de la carpeta 2019 en frame
 
-path = 'tweets/1.5_years_26marzo/2019' # use your path
+path = 'tweets/1.5_years_26marzo/juntos' # use your path
 all_files = glob.glob(path + "/*.csv")
 
 li = []
@@ -59,7 +59,7 @@ frame = pd.concat(li, axis=0, ignore_index=True)
 # con lo que realmente descargué para obtener las fechas faltantes 
 
 
-d1 = date(2017, 1, 1)  # start date, revisar que cuadre con quandl abajo
+d1 = date(2016, 1, 2)  # start date, revisar que cuadre con quandl abajo
 d2 = date(2019, 3, 26)  # end date, revisar que cuadre con quandl abajo
 
 delta = d2 - d1         # timedelta
@@ -214,7 +214,7 @@ explicativa interesante
 # Extraigo Información de Yahoo
 
 import fix_yahoo_finance as yf  
-yahoo = yf.download("^MXX",'2017-01-01','2019-03-26') # Revisar que las fechas
+yahoo = yf.download("^MXX",'2016-01-01','2019-03-26') # Revisar que las fechas
 # coincidan con el rango de los tweets
 
 
@@ -282,6 +282,8 @@ Los junto y los guardo como csv
 # Reviso que en la info financiera estén todas las fechas que puse en los tweets.
 
 fechas_faltantes_fin = list(set(fechas_real)-set(datos_fin['Dates']))
+fechas_faltantes_twee = list(set(datos_fin['Dates'])-set(fechas_real))
+
 
 """
 2 APROXIMACIONES PARA LA UNIÓN DE TWEETS CON INFO FINANCIERA
@@ -312,25 +314,26 @@ por_fuente_fin = por_fuente_fin.sort_index()
 # 1.1  APROXIMACIÓN 1 POR FUENTE
 
       
-por_fuente_loop = por_fuente_fin
+
 new_columns=[]
-for i in range(len(datos_fin)): # Uso datos_fin porque en teoría deberían de quedar
+
+for i in range(len(por_fuente_fin)): # Uso datos_fin porque en teoría deberían de quedar
     #ambos conjuntos del mismo tamaño
     
-    if np.isnan(por_fuente_loop.iloc[i,13])==True:
-        por_fuente_loop=por_fuente_loop.drop(por_fuente_loop.index[i])
+
         
-    if i > len(datos_fin)-10:
-        k= len(datos_fin)-i
+    if i > len(por_fuente_fin)-10:
+        k= len(por_fuente_fin)-i
                                          # Acá hago que la comparativa sea con
                                          # Las 10 siguientes, pero si me aproximo
                                          # al final, lo reduzco para no salir 
                                          # del margen
-    if i <= len(datos_fin)-10:
+    if i <= len(por_fuente_fin)-10:
         k=10
     
+    print(k)
     
-    if np.isnan(por_fuente_loop.iloc[i,13])==False:
+    if np.isnan(por_fuente_fin.iloc[i,13])==False:
         
         
         for j in range(k): # este for evalúa si en las siguientes filas hay nan consecutivos 
@@ -339,25 +342,30 @@ for i in range(len(datos_fin)): # Uso datos_fin porque en teoría deberían de q
             
             
             
-            if all(np.isnan(por_fuente_loop.iloc[i+1:i+j,13])==True)==True:
+            if all(np.isnan(por_fuente_fin.iloc[i+1:i+j,13])==True)==True:
                 
+
                 
-                suma = (por_fuente_loop.iloc[i:i+j,0:9]).sum(axis=0) # Es desde i
+                suma = (por_fuente_fin.iloc[i:i+j,0:9]).sum(axis=0) # Es desde i
                 #porque se le suman a la fila actual
                 
-                rows_to_drop = list(por_fuente_loop.index[i+1:i+j])
-                por_fuente_loop=por_fuente_loop.drop(rows_to_drop)
+                
                 # lo dejo en porcentaje
                 suma=suma/sum(suma)
                 new_columns.append(suma)
+                
     
                 break
 
 
+por_fuente_loop = por_fuente_fin.dropna()
+
 ap1_por_fuente = pd.concat(new_columns,axis=1).T # Formato final
+
 ap1_por_fuente['Dates'] = list(por_fuente_loop.index)
 ap1_por_fuente = ap1_por_fuente.set_index('Dates')
 ap1_por_fuente = ap1_por_fuente.join(por_fuente_loop.iloc[:,9:14])
+
 
 # 1.2 APROXIMACIÓN 2 POR FUENTE 
 
@@ -374,25 +382,22 @@ por_tema_fin = por_tema_fin.sort_index()
 # 2.1 APROXIMACIÓN 1 POR TEMA
 
       
-por_tema_loop = por_tema_fin
 new_columns=[]
-for i in range(len(datos_fin)): # Uso datos_fin porque en teoría deberían de quedar
+for i in range(len(por_tema_fin)): # Uso datos_fin porque en teoría deberían de quedar
     #ambos conjuntos del mismo tamaño
     
-    if np.isnan(por_tema_loop.iloc[i,127])==True:
-        por_tema_loop=por_tema_loop.drop(por_tema_loop.index[i])
         
-    if i > len(datos_fin)-10:
-        k= len(datos_fin)-i
+    if i > len(por_tema_fin)-10:
+        k= len(por_tema_fin)-i
                                          # Acá hago que la comparativa sea con
                                          # Las 10 siguientes, pero si me aproximo
                                          # al final, lo reduzco para no salir 
                                          # del margen
-    if i <= len(datos_fin)-10:
+    if i <= len(por_tema_fin)-10:
         k=10
     
     
-    if np.isnan(por_tema_loop.iloc[i,127])==False:
+    if np.isnan(por_tema_fin.iloc[i,127])==False:
         
         
         for j in range(k): # este for evalúa si en las siguientes filas hay nan consecutivos 
@@ -401,20 +406,20 @@ for i in range(len(datos_fin)): # Uso datos_fin porque en teoría deberían de q
             
             
             
-            if all(np.isnan(por_tema_loop.iloc[i+1:i+j,127])==True)==True:
+            if all(np.isnan(por_tema_fin.iloc[i+1:i+j,127])==True)==True:
                 
                 
-                suma = (por_tema_loop.iloc[i:i+j,0:123]).sum(axis=0) # Es desde i
+                suma = (por_tema_fin.iloc[i:i+j,0:123]).sum(axis=0) # Es desde i
                 #porque se le suman a la fila actual
                 
-                rows_to_drop = list(por_tema_loop.index[i+1:i+j])
-                por_tema_loop=por_tema_loop.drop(rows_to_drop)
+    
                 # lo dejo en porcentaje
                 suma=suma/sum(suma)
                 new_columns.append(suma)
     
                 break
 
+por_tema_loop = por_tema_fin.dropna()
 
 ap1_por_tema = pd.concat(new_columns,axis=1).T # Formato final
 ap1_por_tema['Dates'] = list(por_tema_loop.index)
@@ -446,25 +451,23 @@ por_fuente_tema_fin = por_fuente_tema_fin.sort_index()
 
 # 4.1 APROXIMACIÓN 1 POR FUENTE_TEMA
 
-por_fuente_tema_loop = por_fuente_tema_fin
+
 new_columns=[]
-for i in range(len(datos_fin)): # Uso datos_fin porque en teoría deberían de quedar
+for i in range(len(por_fuente_tema_fin)): # Uso datos_fin porque en teoría deberían de quedar
     #ambos conjuntos del mismo tamaño
     
-    if np.isnan(por_fuente_tema_loop.iloc[i,373])==True:
-        por_fuente_tema_loop=por_fuente_tema_loop.drop(por_fuente_tema_loop.index[i])
-        
-    if i > len(datos_fin)-10:
-        k= len(datos_fin)-i
+
+    if i > len(por_fuente_tema_fin)-10:
+        k= len(por_fuente_tema_fin)-i
                                          # Acá hago que la comparativa sea con
                                          # Las 10 siguientes, pero si me aproximo
                                          # al final, lo reduzco para no salir 
                                          # del margen
-    if i <= len(datos_fin)-10:
+    if i <= len(por_fuente_tema_fin)-10:
         k=10
     
     
-    if np.isnan(por_fuente_tema_loop.iloc[i,373])==False:
+    if np.isnan(por_fuente_tema_fin.iloc[i,373])==False:
         
         
         for j in range(k): # este for evalúa si en las siguientes filas hay nan consecutivos 
@@ -473,20 +476,20 @@ for i in range(len(datos_fin)): # Uso datos_fin porque en teoría deberían de q
             
             
             
-            if all(np.isnan(por_fuente_tema_loop.iloc[i+1:i+j,373])==True)==True:
+            if all(np.isnan(por_fuente_tema_fin.iloc[i+1:i+j,373])==True)==True:
                 
                 
-                suma = (por_fuente_tema_loop.iloc[i:i+j,0:369]).sum(axis=0) # Es desde i
+                suma = (por_fuente_tema_fin.iloc[i:i+j,0:369]).sum(axis=0) # Es desde i
                 #porque se le suman a la fila actual
                 
-                rows_to_drop = list(por_fuente_tema_loop.index[i+1:i+j])
-                por_fuente_tema_loop=por_fuente_tema_loop.drop(rows_to_drop)
+
                 # lo dejo en porcentaje
                 suma=suma/sum(suma)
                 new_columns.append(suma)
     
                 break
 
+por_fuente_tema_loop = por_fuente_tema_fin.dropna()
 
 ap1_por_fuente_tema = pd.concat(new_columns,axis=1).T # Formato final
 ap1_por_fuente_tema['Dates'] = list(por_fuente_tema_loop.index)
