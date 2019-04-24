@@ -81,7 +81,7 @@ def daily_tweets_func(i, dates, keywords,sources, daily_tweets):
                     if analysis.sentiment[0]>0:
                         s=1 #positive puse 1 
                     else:                   # Esto para generar distintas combinaciones al sumar
-                        s=2 #negative puse 2
+                        s=2 #negative puse 2 
                                    
 
                 #tweets.append(tui) No necesito guardar los tweets, solo las calificaciones

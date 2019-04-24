@@ -260,13 +260,13 @@ for i in range(len(yahoo)):
         
         """
         
-        ap_sig_d = (yahoo.iloc[(i+1),0]-yahoo.iloc[i,3])/yahoo.iloc[i,3]
+        ap_sig_d = (yahoo.iloc[(i+1),3]-yahoo.iloc[i,3])/yahoo.iloc[i,3]
         ap_nxd.append(ap_sig_d)
 
 
 datos_fin = pd.DataFrame({'var_rel_apertura':v_apertura, 'var_rel_cierre':v_cierre,
                           'rate_ap_cierre':r_ap_ci,'volume':vol_tr,
-                          'apertura_next_day':ap_nxd, 'Dates':fecha})
+                          'cierre_next_day':ap_nxd, 'Dates':fecha})
     
     
     
@@ -515,17 +515,17 @@ ap2_mezclo_todo = ap2_mix_fuente_tema.join(ap2_por_fuente_tema.iloc[:,0:368])
 GUARDO TODO EN CSV
 
 """
-ap1_por_fuente.to_csv('tweets/1.5_years_26marzo/csv_to_train/ap1_por_fuente.csv')
-ap2_por_fuente.to_csv('tweets/1.5_years_26marzo/csv_to_train/ap2_por_fuente.csv')
+ap1_por_fuente.to_csv('tweets/1.5_years_26marzo/csv_to_train_cierre/ap1_por_fuente.csv')
+ap2_por_fuente.to_csv('tweets/1.5_years_26marzo/csv_to_train_cierre/ap2_por_fuente.csv')
 
-ap1_por_tema.to_csv('tweets/1.5_years_26marzo/csv_to_train/ap1_por_tema.csv')
-ap2_por_tema.to_csv('tweets/1.5_years_26marzo/csv_to_train/ap2_por_tema.csv')
+ap1_por_tema.to_csv('tweets/1.5_years_26marzo/csv_to_train_cierre/ap1_por_tema.csv')
+ap2_por_tema.to_csv('tweets/1.5_years_26marzo/csv_to_train_cierre/ap2_por_tema.csv')
 
-ap1_mix_fuente_tema.to_csv('tweets/1.5_years_26marzo/csv_to_train/ap1_mix_fuente_tema.csv')
-ap2_mix_fuente_tema.to_csv('tweets/1.5_years_26marzo/csv_to_train/ap2_mix_fuente_tema.csv')
+ap1_mix_fuente_tema.to_csv('tweets/1.5_years_26marzo/csv_to_train_cierre/ap1_mix_fuente_tema.csv')
+ap2_mix_fuente_tema.to_csv('tweets/1.5_years_26marzo/csv_to_train_cierre/ap2_mix_fuente_tema.csv')
 
-ap1_por_fuente_tema.to_csv('tweets/1.5_years_26marzo/csv_to_train/ap1_por_fuente_tema.csv')
-ap2_por_fuente_tema.to_csv('tweets/1.5_years_26marzo/csv_to_train/ap2_por_fuente_tema.csv')
+ap1_por_fuente_tema.to_csv('tweets/1.5_years_26marzo/csv_to_train_cierre/ap1_por_fuente_tema.csv')
+ap2_por_fuente_tema.to_csv('tweets/1.5_years_26marzo/csv_to_train_cierre/ap2_por_fuente_tema.csv')
 
-ap1_mezclo_todo.to_csv('tweets/1.5_years_26marzo/csv_to_train/ap1_mezclo_todo.csv')
-ap2_mezclo_todo.to_csv('tweets/1.5_years_26marzo/csv_to_train/ap2_mezclo_todo.csv')
+ap1_mezclo_todo.to_csv('tweets/1.5_years_26marzo/csv_to_train_cierre/ap1_mezclo_todo.csv')
+ap2_mezclo_todo.to_csv('tweets/1.5_years_26marzo/csv_to_train_cierre/ap2_mezclo_todo.csv')
