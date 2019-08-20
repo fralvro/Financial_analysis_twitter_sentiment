@@ -6,7 +6,7 @@ This section will explain the process of obtaining tweets and their analysis, as
 
 ## Tweet mining
 
-This process followed two major stages of experimentation. First, we tried to extract twitter content directly from its API, which works properly, however it has a limit of daily tweets and does not explicitly provide a methodology to obtain tweets older than one week. Second, the library [GetOldTweets3] (https://pypi.org/project/GetOldTweets3/) was used, which is based on the Jefferson-Henrique project [GetOldTweets-python] (https://github.com / Jefferson-Henrique / GetOldTweets-python) and allows detailed searches on twitter content. This package makes a Web scrapping process that allows you to obtain information from twitter simulating a person who navigates in the social network interface.
+This process followed two major stages of experimentation. First, we tried to extract twitter content directly from its API, which works properly, however it has a limit of daily tweets and does not explicitly provide a methodology to obtain tweets older than one week. Second, the library [GetOldTweets3](https://pypi.org/project/GetOldTweets3/) was used, which is based on the Jefferson-Henrique project [GetOldTweets-python](https://github.com/Jefferson-Henrique/GetOldTweets-python) and allows detailed searches on twitter content. This package makes a Web scrapping process that allows you to obtain information from twitter simulating a person who navigates in the social network interface.
 
 The package allowed specific searches to be conducted that would provide our research with relevant information. The search parameters that were used were: QuerySearch (keyword to be found within tweets), Username (source of tweet), setSince (start date of search), setUntil (deadline of search), setMaxTweets (maximum number of tweets to search). It was decided to create a list of keywords that represent issues, organizations or companies that could directly impact the Mexican CPI. A list of reliable sources on which to look for tweets and avoid biased information was also prepared.
 
@@ -64,7 +64,7 @@ The searches were based on all possible combinations that can be done with these
 
 ## Sentiment analysis
 
-For the sentiment analysis, the [TextBlob] library (https://textblob.readthedocs.io/en/dev/) was used, which processes textual data through natural language processing. Some of its applications are:
+For the sentiment analysis, the [TextBlob](https://textblob.readthedocs.io/en/dev/) library was used, which processes textual data through natural language processing. Some of its applications are:
 
 * Sentiment analysis
 * Calsification of texts
